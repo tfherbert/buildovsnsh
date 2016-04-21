@@ -25,6 +25,11 @@ fi
 
 export DATE=`date +%Y-%m-%d`
 
+if [ -z ${WORKSPACE+1} ]; then
+    # We are not being run by Jenkins.
+    export WORKSPACE=`pwd`
+fi
+
 export BUILD_BASE=$WORKSPACE
 
 if [ ! -d $BUILD_BASE ]

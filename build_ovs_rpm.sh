@@ -81,12 +81,14 @@ then
     rm -rf $TMPDIR
 fi
 
-echo "----------------------------------------"
-echo Install pre-reqs.
-echo
-sudo yum -y install gcc make python-devel openssl-devel kernel-devel graphviz \
-       kernel-debug-devel autoconf automake rpm-build redhat-rpm-config \
-       libtool python-twisted-core desktop-file-utils groff PyQt4
+function install_pre_reqs() {
+    echo "----------------------------------------"
+    echo Install pre-reqs.
+    echo
+    sudo yum -y install gcc make python-devel openssl-devel kernel-devel graphviz \
+                kernel-debug-devel autoconf automake rpm-build redhat-rpm-config \
+                libtool python-twisted-core desktop-file-utils groff PyQt4
+}
 
 VERSION=2.3.90
 os_type=fedora
@@ -124,16 +126,29 @@ if [ ! -z $DPDK ]; then
     echo "Clone Fedora copr repo and copy files."
     echo
     git clone http://copr-dist-git.fedorainfracloud.org/cgit/pmatilai/dpdk-snapshot/openvswitch.git
+    cd openvswitch
+    git checkout $COPR_OVS_VERSION
+    echo "-----------------------------------"
     cp $TMPDIR/openvswitch/openvswitch.spec $RPMDIR/SPECS
     cp $TMPDIR/openvswitch/* $RPMDIR/SOURCES
     snapgit=`grep "define snapver" $TMPDIR/openvswitch/openvswitch.spec | cut -c26-33`
+    echo "-------------------------------------------"
+    echo "Clone NSH patch and copy patch files."
+    echo
+    cd $TMPDIR
+    git clone https://github.com/yyang13/ovs_nsh_patches.git
+    cp $TMPDIR/ovs_nsh_patches/*.patch $RPMDIR/SOURCES
+    echo "-------------------------------------------"
+    echo "Patch spec file to include NSH patches"
+    cd $TMPDIR/openvswitch
+    patch -p1 < $TOPDIR/add-nsh.patch
     echo "-------------------------------------------"
     echo "Remove old dpdk, ovs and dpdk development rpms"
     echo
     cleanrpms
 
     if [ -z $DPDK_VERSION ]; then
-        DPDK_VERSION=16.04.0
+        DPDK_VERSION=2.2.0
     fi
     echo "-------------------------------------------"
     echo "Install dpdk and dpdk development rpms for version $DPDK_VERSION"
