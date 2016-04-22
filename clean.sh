@@ -13,10 +13,10 @@ export BUILD_BASE=$WORKSPACE
 
 set +e
 rm -rf ovsrpm
-rm -rf release
 rm -rf rpmbuild
 rm -rf rpms
 rm -rf build
 rm *.rpm
+ccache -C
 set -e
 exit 0
