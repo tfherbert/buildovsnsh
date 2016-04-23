@@ -178,6 +178,7 @@ if [ ! -z $DPDK ]; then
     echo "--------------------------------------------"
     echo "Build openvswitch RPM"
     echo
+    rpmbuild -bb --define "_topdir `echo $RPMDIR`" $setnocheck openvswitch.spec
 else
     echo "-------------------------------------------------"
     echo "Build OVS without DPDK:"
@@ -210,17 +211,25 @@ else
         curl --silent --output $HOME/rpmbuild/SOURCES/openvswitch-${VERSION}.tar.gz http://openvswitch.org/releases/openvswitch-${VERSION}.tar.gz
     fi
 
-    if [ ! -z $kmod ]; then
-        echo "--------------------------------------------"
-        echo "Building openvswitch kernel module RPM"
-        echo
-        rpmbuild -bb -D "kversion $kernel_version" -D "kflavors default" --define "_topdir `echo $RPMDIR`" $setnocheck rhel/openvswitch-kmod-${os_type}.spec
-    fi
-    echo "--------------------------------------------"
-    echo "Build openvswitch RPM"
-    echo
 fi
-rpmbuild -bb --define "_topdir `echo $RPMDIR`" $setnocheck openvswitch.spec
+
+if [ ! -z $kmod ]; then
+    cd $TMPDIR/ovs
+    echo "--------------------------------------------"
+    echo making distribution tarball for Open vswitch version $VERSION
+    echo
+    ./boot.sh
+    ./configure
+    make dist
+    echo "--------------------------------------------"
+    echo Copy distribution tarball to $HOME/rpmbuild/SOURCES
+    echo
+    cp openvswitch-*.tar.gz $HOME/rpmbuild/SOURCES
+    echo "--------------------------------------------"
+    echo "Building openvswitch kernel module RPM"
+    echo
+    rpmbuild -bb -D "kversion $kernel_version" -D "kflavors default" --define "_topdir `echo $RPMDIR`" $setnocheck rhel/openvswitch-kmod-${os_type}.spec
+fi
 
 cp $RPMDIR/RPMS/x86_64/*.rpm $HOME
 

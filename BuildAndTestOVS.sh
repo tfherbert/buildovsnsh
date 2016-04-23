@@ -158,16 +158,10 @@ if [ ! -z $kernel_version ]; then
 EOI
     scp ${SSH_OPTIONS[@]} stack@UNDERCLOUD:*.rpm $RPMDIR/RPMS/
 elif [[ "$DPDK" =~ "yes" ]]; then
-    echo Build ovs with DPDK locally
-    #
-    # Build locally and copy RPMS
-    #
-    ./build_ovs_rpm.sh $setnocheck -d -g $TAG -p $OVS_PATCH -u $OVS_REPO_URL
-else
     # Build locally and copy RPMS
     #
     echo build OVS rpm locally
-    ./build_ovs_rpm.sh $setnocheck -g $TAG $setkmod -p $OVS_PATCH -u $OVS_REPO_URL
+    ./build_ovs_rpm.sh $setnocheck -g $TAG $setdpdk $setkmod -p $OVS_PATCH -u $OVS_REPO_URL
 fi
 #
 # Test rpm
