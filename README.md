@@ -3,7 +3,7 @@ Build ovs/dpdk RPM with NSH patches
 
 These scripts build OVS with DPDK RPM with NSH/VTEP/vxLAN patches.
 
-Components used to build these RPM.
+Components used to build these RPMs.
 -------------------------------------------------------------
 
 Version 1.0
