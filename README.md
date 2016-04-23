@@ -25,13 +25,14 @@ $ ./buildovsns.sh
 ```
 Clean
 ----------
+Requires sudo
 ```
 $ ./clean.sh
 ```
 
 Install Prerequisites
 ---------------------
-Requires SUDO
+Requires sudo
 ```
 $ ./prepare.sh
 ```
@@ -57,3 +58,5 @@ openvswitch-ovn-common-2.5.90-0.11974.gitc4623bb8.1.fc23.x86_64.rpm
 openvswitch-ovn-docker-2.5.90-0.11974.gitc4623bb8.1.fc23.x86_64.rpm
 openvswitch-ovn-host-2.5.90-0.11974.gitc4623bb8.1.fc23.x86_64.rpm
 openvswitch-ovn-vtep-2.5.90-0.11974.gitc4623bb8.1.fc23.x86_64.rpm
+openvswitch-kmod-2.5.90-1.fc23.x86_64.rpm
+
