@@ -1,7 +1,7 @@
 Build ovs/dpdk RPM with NSH patches
 ===================================
 
-These scripts build OVS with DPDK RPM and applies NSH patches.
+These scripts build OVS with DPDK RPM with NSH/VTEP/vxLAN patches.
 
 Components used to build these RPM.
 -------------------------------------------------------------
@@ -11,7 +11,7 @@ Version 1.0
 
 | Included | Version | Commit | Upstream |
 | -------- | ------- | ------ | -------- |
-DPDK | 2.2.0 | a38e5ec15e3fe615b94f3cc5edca5974dab325ab | (git://dpdk.org/dpdk) |
+DPDK | 2.2.0 | a38e5ec15e3fe615b94f3cc5edca5974dab325ab | (http://dpdk.org/dpdk.git) |
 | COPR DPDK | | 78716ea70aedf802322c0dda47c584ef5f6c9168 | (http://copr-dist-git.fedorainfracloud.org/cgit/pmatilai/dpdk-snapshot/dpdk.git) |
 | Open vSwitch | 2.5.90 | c4623bb839bb7a182f45f4619a51b65a62f675e7 | (https://github.com/openvswitch/ovs.git) |
 | COPR OVS | | 74d7cd8c3592a147306942e0ed423538bc08d4eb | (http://copr-dist-git.fedorainfracloud.org/cgit/pmatilai/dpdk-snapshot/openvswitch.git) |
@@ -50,7 +50,7 @@ Configuration options are in config/config
 List of RPMs
 ---------
 
-RPMS produced by these scripts.
+List of RPMS produced by these scripts. They are placed in the release directory.
 
 * dpdk-2.2.0-1.fc23.x86_64.rpm
 * dpdk-debuginfo-2.2.0-1.fc23.x86_64.rpm
