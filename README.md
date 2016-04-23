@@ -23,19 +23,19 @@ Build RPMs
 To start the build:
 
 ```
-$ ./buildovsns.sh
+$ ./buildovsnsh.sh
 ```
 
 Clean
 ----------
-Requires sudo. To run:
+Uses sudo. To run:
 ```
 $ ./clean.sh
 ```
 
 Install Prerequisites
 ---------------------
-Requires sudo. To run:
+Uses sudo. To run:
 
 ```
 $ ./prepare.sh
@@ -50,7 +50,7 @@ Configuration options are in config/config
 List of RPMs
 ---------
 
-List of RPMS produced by these scripts. They are placed in the release directory.
+List of RPMS produced by these scripts. They are placed in the release directory. The `openvswitch-2.5.90` contains pre-linked DPDK libraries. The RPM supports OVS either with DPDK or with the Linux kernel data plane. To use nsh/vxlan with Linux kernel data path, install `openvswitch-kmod`. 
 
 * dpdk-2.2.0-1.fc23.x86_64.rpm
 * dpdk-debuginfo-2.2.0-1.fc23.x86_64.rpm
