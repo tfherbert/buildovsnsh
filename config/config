@@ -38,8 +38,8 @@ export WITH_DPDK=yes
 export DPDK_PATCH=none
 export DPDK_VERSION=2.2.0
 export OVS_VERSION=7d433ae57ebb90cd68e8fa948a096f619ac4e2d8
-export COPR_DPDK_VERSION=78716ea70aedf802322c0dda47c584ef5f6c9168
-export COPR_OVS_VERSION=74d7cd8c3592a147306942e0ed423538bc08d4eb
+export COPR_DPDK_VERSION=2bcf24dd0ad84f20a39b281f84423bd6164e00a6
+export COPR_OVS_VERSION=f57c37c07483e8b653380e62f5baeda9de17c9b8
 #
 # When KMOD is set, the Linux kernel module is built and tested.
 #

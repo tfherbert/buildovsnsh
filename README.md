@@ -12,9 +12,9 @@ Version 1.0
 | Included | Version | Commit | Upstream |
 | -------- | ------- | ------ | -------- |
 DPDK | 2.2.0 | a38e5ec15e3fe615b94f3cc5edca5974dab325ab | (http://dpdk.org/dpdk.git) |
-| COPR DPDK | | 78716ea70aedf802322c0dda47c584ef5f6c9168 | (http://copr-dist-git.fedorainfracloud.org/cgit/pmatilai/dpdk-snapshot/dpdk.git) |
+| COPR DPDK | | 2bcf24dd0ad84f20a39b281f84423bd6164e00a6 | (https://github.com/tfherbert/dpdk-snap.git) |
 | Open vSwitch | 2.5.90 | c4623bb839bb7a182f45f4619a51b65a62f675e7 | (https://github.com/openvswitch/ovs.git) |
-| COPR OVS | | 74d7cd8c3592a147306942e0ed423538bc08d4eb | (http://copr-dist-git.fedorainfracloud.org/cgit/pmatilai/dpdk-snapshot/openvswitch.git) |
+| COPR OVS | | f57c37c07483e8b653380e62f5baeda9de17c9b8 | (https://github.com/tfherbert/ovs-snap.git) |
 | NSH Patches | | 98e1d3d6b1ed49d902edaede11820853b0ad5037 | (https://github.com/yyang13/ovs_nsh_patches.git) |
 
 Build RPMs

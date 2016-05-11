@@ -125,13 +125,13 @@ if [ ! -z $DPDK ]; then
     echo "----------------------------------"
     echo "Clone Fedora copr repo and copy files."
     echo
-    git clone http://copr-dist-git.fedorainfracloud.org/cgit/pmatilai/dpdk-snapshot/openvswitch.git
-    cd openvswitch
+    git clone https://github.com/tfherbert/ovs-snap.git
+    cd ovs-snap
     git checkout $COPR_OVS_VERSION
     echo "-----------------------------------"
-    cp $TMPDIR/openvswitch/openvswitch.spec $RPMDIR/SPECS
-    cp $TMPDIR/openvswitch/* $RPMDIR/SOURCES
-    snapgit=`grep "define snapver" $TMPDIR/openvswitch/openvswitch.spec | cut -c26-33`
+    cp $TMPDIR/ovs-snap/openvswitch.spec $RPMDIR/SPECS
+    cp $TMPDIR/ovs-snap/* $RPMDIR/SOURCES
+    snapgit=`grep "define snapver" $TMPDIR/ovs-snap/openvswitch.spec | cut -c26-33`
     echo "-------------------------------------------"
     echo "Clone NSH patch and copy patch files."
     echo
@@ -140,7 +140,7 @@ if [ ! -z $DPDK ]; then
     cp $TMPDIR/ovs_nsh_patches/*.patch $RPMDIR/SOURCES
     echo "-------------------------------------------"
     echo "Patch spec file to include NSH patches"
-    cd $TMPDIR/openvswitch
+    cd $TMPDIR/ovs-snap
     patch -p1 < $TOPDIR/add-nsh.patch
     echo "-------------------------------------------"
     echo "Remove old dpdk, ovs and dpdk development rpms"
@@ -174,7 +174,7 @@ if [ ! -z $DPDK ]; then
     prefix=openvswitch-${basever}
     archive=${prefix}-${snapser}.git${snapgit}.tar.gz
     git archive --prefix=${prefix}-${snapser}.git${snapgit}/ HEAD  | gzip -9 > $RPMDIR/SOURCES/${archive}
-    cd $TMPDIR/openvswitch
+    cd $TMPDIR/ovs-snap
     echo "--------------------------------------------"
     echo "Build openvswitch RPM"
     echo
