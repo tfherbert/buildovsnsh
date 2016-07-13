@@ -31,6 +31,7 @@ function delrpm() {
 }
 function cleanrpms() {
     delrpm openvswitch
+    delrpm openvswitch-kmod
     delrpm dpdk-devel
     delrpm dpdk-tools
     delrpm dpdk-examples
