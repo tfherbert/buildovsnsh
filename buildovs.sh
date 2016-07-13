@@ -63,16 +63,20 @@ fi
 #
 # Build ovs rpm with DPDK
 #
-echo =============================================
-echo =======Build ovs rpm with DPDK and test in VM.
-echo
-$BUILD_BASE/BuildAndTestOVS.sh -d -g master -p none -t
+if [[ $WITH_DPDK =~ "yes" ]]; then
+    echo =============================================
+    echo =======Build ovs rpm with DPDK.
+    echo
+    $BUILD_BASE/BuildAndTestOVS.sh -d -g master -p none -t
+else
+    echo =============================================
+    echo =======Build ovs rpm without DPDK.
+    echo
+    $BUILD_BASE/BuildAndTestOVS.sh -g master -p none -t
+fi
 #
-# Build special version of ovs with patches --TODO
+# Once build is done cleanup
 #
-
-# Once build is done copy product to artifactory.
-# and cleanup
 
 
 echo "---------------------------------------"

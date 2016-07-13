@@ -146,34 +146,34 @@ mkdir -p $RPMDIR/SRPMS
 # build dpdk rpm locally.
 #
 if [[ "$DPDK" =~ "yes" ]]; then
+    echo ==========================================
     echo Build DPDK RPMs
+    echo
     $BUILD_BASE/build_dpdk_rpm.sh -g $DPDK_VERSION
 fi
 #
+# Build locally and copy RPMS
 #
-if [ ! -z $kernel_version ]; then
-    echo build rpm on undercloud with kernel version $kernel_version
-    ssh -T ${SSH_OPTIONS[@]} "stack@$UNDERCLOUD" <<EOI
-        ./build_ovs_rpm.sh -a $kernel_major $setnocheck -g $TAG -i $kernel_minor -k -p $OVS_PATCH -u $OVS_REPO_URL
-EOI
-    scp ${SSH_OPTIONS[@]} stack@UNDERCLOUD:*.rpm $RPMDIR/RPMS/
-elif [[ "$DPDK" =~ "yes" ]]; then
-    # Build locally and copy RPMS
-    #
-    echo build OVS rpm locally
-    ./build_ovs_rpm.sh $setnocheck -g $TAG $setdpdk $setkmod -p $OVS_PATCH -u $OVS_REPO_URL
-fi
+echo ==========================================
+echo Build OVS rpm
+echo
+./build_ovs_rpm.sh $setnocheck -g $TAG $setdpdk $setkmod -p $OVS_PATCH -u $OVS_REPO_URL
 #
 # Test rpm
 #
 if [ ! -z $TESTRPM ]; then
+    echo ==========================================
+    echo Test RPM
+    echo
     ./test_ovs_rpm.sh $setdpdk $setkmod
 fi
 
 #
 # If tests pass, copy rpms to release dir
 #
-echo copy rpms to release dir
+echo ==========================================
+echo Copy rpms to release dir
+echo
 cp $RPMDIR/RPMS/x86_64/* $TMP_RELEASE_DIR
 
 exit 0
