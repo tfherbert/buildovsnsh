@@ -6,16 +6,19 @@ These scripts build OVS with DPDK RPM with NSH/VTEP/vxLAN patches.
 Components used to build these RPMs.
 -------------------------------------------------------------
 
-Version 1.0
+Version 1.1
+
+Add latest NSH patch revision and updated commit.
+Corrected Open vswitch 2.5.90 commit in Readme.
 
 
 | Included | Version | Commit | Upstream |
 | -------- | ------- | ------ | -------- |
 DPDK | 2.2.0 | a38e5ec15e3fe615b94f3cc5edca5974dab325ab | (http://dpdk.org/dpdk.git) |
 | COPR DPDK | | 2bcf24dd0ad84f20a39b281f84423bd6164e00a6 | (https://github.com/tfherbert/dpdk-snap.git) |
-| Open vSwitch | 2.5.90 | c4623bb839bb7a182f45f4619a51b65a62f675e7 | (https://github.com/openvswitch/ovs.git) |
+| Open vSwitch | 2.5.90 | 7d433ae57ebb90cd68e8fa948a096f619ac4e2d8 | (https://github.com/openvswitch/ovs.git) |
 | COPR OVS | | f57c37c07483e8b653380e62f5baeda9de17c9b8 | (https://github.com/tfherbert/ovs-snap.git) |
-| NSH Patches | | 98e1d3d6b1ed49d902edaede11820853b0ad5037 | (https://github.com/yyang13/ovs_nsh_patches.git) |
+| NSH Patches | | 307b06d986a49698c01caa3d6ed62fd7dac83e87 | (https://github.com/yyang13/ovs_nsh_patches.git) |
 
 Build RPMs
 ----------

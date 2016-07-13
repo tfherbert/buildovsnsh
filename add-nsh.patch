@@ -1,17 +1,8 @@
-From 47a2a81ceeffa081b4fd5d0ba0819fc5cf4d6c69 Mon Sep 17 00:00:00 2001
-From: Thomas F Herbert <thomasfherbert@gmail.com>
-Date: Thu, 21 Apr 2016 08:10:56 -0400
-Subject: [PATCH] Add nsh patch
-
----
- openvswitch.spec | 6 ++++++
- 1 file changed, 6 insertions(+)
-
 diff --git a/openvswitch.spec b/openvswitch.spec
-index 1aa6601..b7f830b 100644
+index 1aa6601..3d511bd 100644
 --- a/openvswitch.spec
 +++ b/openvswitch.spec
-@@ -38,6 +38,12 @@ Patch3: openvswitch-2.3.90-dpdk-options.patch
+@@ -38,6 +38,13 @@ Patch3: openvswitch-2.3.90-dpdk-options.patch
  
  # Use our own linker script
  Patch20: openvswitch-2.4.90-dpdk-lib-1.patch
@@ -21,9 +12,7 @@ index 1aa6601..b7f830b 100644
 +Patch23: 0003-Add-userspace-dataplane-nsh-support-and-remove-push_.patch
 +Patch24: 0004-Fix-too-large-stack-frame-size.patch
 +Patch25: 0005-Ethernet-header-must-be-kept-in-VxLAN-gpe-eth-NSH-fo.patch
++Patch26: 0006-Fix-VxLAN-gpe-Eth-NSH-issues.patch
  
  ExcludeArch: ppc
  
--- 
-2.5.0
-
