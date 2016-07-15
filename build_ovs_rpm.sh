@@ -32,12 +32,41 @@ function delrpm() {
     set -e
 }
 function cleanrpms() {
+    if [ ! -z $kmod ]; then
+        set +e
+        sudo modprobe -r openvswitch
+        set -e
+        echo "-------------------------------------------"
+        echo "Remove old ovs kernel module rpm."
+        echo
+        delrpm openvswitch-kmod
+    fi
+    echo "-------------------------------------------"
+    echo "Remove old ovs rpm."
+    echo
     delrpm openvswitch
-    delrpm dpdk-devel
-    delrpm dpdk-tools
-    delrpm dpdk-examples
-    delrpm dpdk
+    if [ ! -z $DPDK ]; then
+        echo "-------------------------------------------"
+        echo "Remove old dpdk, and dpdk development rpms"
+        echo
+        delrpm dpdk-devel
+        delrpm dpdk-tools
+        delrpm dpdk-examples
+        delrpm dpdk
+    fi
 }
+function apply_nsh_patches() {
+    echo "-------------------------------------------"
+    echo "Clone NSH patch and copy patch files."
+    echo
+    cd $TMPDIR
+    if [ -e ovs_nsh_patches ]; then
+        rm -rf ovs_nsh_patches
+    fi
+    git clone https://github.com/yyang13/ovs_nsh_patches.git
+    cp $TMPDIR/ovs_nsh_patches/*.patch $RPMDIR/SOURCES
+}
+
 
 while getopts "cdg:hkp:u:v" opt; do
     case "$opt" in
@@ -89,8 +118,7 @@ function install_pre_reqs() {
                 kernel-debug-devel autoconf automake rpm-build redhat-rpm-config \
                 libtool python-twisted-core desktop-file-utils groff PyQt4
 }
-
-VERSION=2.3.90
+VERSION=2.5.90
 os_type=fedora
 kernel_version=$(uname -a | awk '{print $3}')
 
@@ -133,17 +161,12 @@ if [ ! -z $DPDK ]; then
     cp $TMPDIR/ovs-snap/* $RPMDIR/SOURCES
     snapgit=`grep "define snapver" $TMPDIR/ovs-snap/openvswitch.spec | cut -c26-33`
     echo "-------------------------------------------"
-    echo "Clone NSH patch and copy patch files."
+    echo "Apply nsh patches."
     echo
-    cd $TMPDIR
-    git clone https://github.com/yyang13/ovs_nsh_patches.git
-    cp $TMPDIR/ovs_nsh_patches/*.patch $RPMDIR/SOURCES
+    apply_nsh_patches
+
     echo "-------------------------------------------"
-    echo "Patch spec file to include NSH patches"
-    cd $TMPDIR/ovs-snap
-    patch -p1 < $TOPDIR/add-nsh.patch
-    echo "-------------------------------------------"
-    echo "Remove old dpdk, ovs and dpdk development rpms"
+    echo "Remove old rpms."
     echo
     cleanrpms
 
@@ -172,8 +195,8 @@ if [ ! -z $DPDK ]; then
     snapser=`git log --pretty=oneline | wc -l`
     basever=`grep AC_INIT configure.ac | cut -d' ' -f2 | cut -d, -f1`
     prefix=openvswitch-${basever}
-    archive=${prefix}-${snapser}.git${snapgit}.tar.gz
-    git archive --prefix=${prefix}-${snapser}.git${snapgit}/ HEAD  | gzip -9 > $RPMDIR/SOURCES/${archive}
+    archive=${prefix}-${snapser}.NSH${snapgit}.tar.gz
+    git archive --prefix=${prefix}-${snapser}.NSH${snapgit}/ HEAD  | gzip -9 > $RPMDIR/SOURCES/${archive}
     cd $TMPDIR/ovs-snap
     echo "--------------------------------------------"
     echo "Build openvswitch RPM"
@@ -184,51 +207,95 @@ else
     echo "Build OVS without DPDK:"
     echo "Use spec files for $os_type in OVS distribution."
     echo
-    if [[ "$TAG" =~ "master" ]]; then
-        git clone $OVS_REPO_URL
-        cd ovs
+    echo "-------------------------------------------"
+    echo "Remove old rpms."
+    echo
+    cleanrpms
+    cd $TMPDIR
+    git clone $OVS_REPO_URL
+    cd $TMPDIR/ovs
+    git checkout $OVS_VERSION
+    echo "--------------------------------------------"
+    echo "Get commit from $snapgit User Space OVS version $TAG"
+    echo
+    snapgit=`git log --pretty=oneline -n1|cut -c1-8`
+    snapser=`git log --pretty=oneline | wc -l`
+    basever=`grep AC_INIT configure.ac | cut -d' ' -f2 | cut -d, -f1`
+    prefix=openvswitch-${basever}
+    snapver=${snapser}.NSH${snapgit}
+    archive=${prefix}-${snapser}.NSH${snapgit}.tar.gz
 
-        if [[ ! "$OVS_PATCH" =~ "no" ]]; then
-            echo "Apply patches from $OVS_PATCH"
-        fi
-        basever=`grep AC_INIT configure.ac | cut -d' ' -f2 | cut -d, -f1`
-        export VERSION=$basever
-
-        echo "--------------------------------------------"
-        echo making distribution tarball for Open vswitch version $VERSION
-        echo
-        ./boot.sh
-        ./configure
-        make dist
-
-        echo cp openvswitch-*.tar.gz $HOME/rpmbuild/SOURCES
-        cp openvswitch-*.tar.gz $HOME/rpmbuild/SOURCES
-    else
-        export VERSION=${TAG}
-        echo "---------------------------------------------"
-        echo "Get openvswith-${VERSION}.tar.gz"
-        echo
-        curl --silent --output $HOME/rpmbuild/SOURCES/openvswitch-${VERSION}.tar.gz http://openvswitch.org/releases/openvswitch-${VERSION}.tar.gz
-    fi
-
+    echo "----------------------------------"
+    echo "Create dist name and rpm name. Put $snapver into spec file"
+    echo
+    cd $BUILD_BASE
+    sed -i "s/%define snapver.*/%define snapver ${snapver}/" openvswitch.spec
+    echo "----------------------------------"
+    echo "Copy spec file."
+    echo
+    cp $BUILD_BASE/openvswitch.spec $RPMDIR/SPECS
+    cp $BUILD_BASE/openvswitch.spec $RPMDIR/SOURCES
+    echo "-------------------------------------------"
+    echo "Apply nsh patches."
+    echo
+    apply_nsh_patches
+    echo "--------------------------------------------"
+    echo "Creating snapshot, $archive with name same as in spec file."
+    echo
+    cd $TMPDIR/ovs
+    git archive --prefix=${prefix}-${snapser}.NSH${snapgit}/ HEAD  | gzip -9 > $RPMDIR/SOURCES/${archive}
+    echo "--------------------------------------------"
+    echo "Build openvswitch RPM"
+    echo
+    cd $BUILD_BASE
+    rpmbuild -bb --without dpdk --define "_topdir `echo $RPMDIR`" $setnocheck openvswitch.spec
 fi
 
 if [ ! -z $kmod ]; then
+    echo "--------------------------------------------"
+    echo Build Open vswitch version $VERSION kernel module
+    echo
+    cd $TMPDIR
+    if [ -e ovs ]; then
+        rm -rf ovs
+    fi
+    git clone $OVS_REPO_URL
     cd $TMPDIR/ovs
+    git checkout $OVS_VERSION
     echo "--------------------------------------------"
-    echo making distribution tarball for Open vswitch version $VERSION
+    echo "Get commit from $snapgit User Space OVS version $TAG"
     echo
-    ./boot.sh
-    ./configure
-    make dist
+    snapgit=`git log --pretty=oneline -n1|cut -c1-8`
+    snapser=`git log --pretty=oneline | wc -l`
+    basever=`grep AC_INIT configure.ac | cut -d' ' -f2 | cut -d, -f1`
+    prefix=openvswitch-kmod-${basever}
+    snapver=${snapser}.NSH${snapgit}
+    archive=${prefix}-${snapser}.NSH${snapgit}.tar.gz
+
+    echo "----------------------------------"
+    echo "Create dist name and rpm name. Put $snapver into spec file"
+    echo
+    cd $BUILD_BASE
+    sed -i "s/%define snapver.*/%define snapver ${snapver}/" openvswitch-kmod.spec
+    echo "----------------------------------"
+    echo "Copy spec file."
+    echo
+    cp $BUILD_BASE/openvswitch-kmod.spec $RPMDIR/SPECS
+    cp $BUILD_BASE/openvswitch-kmod.spec $RPMDIR/SOURCES
+    echo "-------------------------------------------"
+    echo "Apply nsh patches."
+    echo
+    apply_nsh_patches
     echo "--------------------------------------------"
-    echo Copy distribution tarball to $HOME/rpmbuild/SOURCES
+    echo "Creating snapshot, $archive with name same as in spec file."
     echo
-    cp openvswitch-*.tar.gz $HOME/rpmbuild/SOURCES
+    cd $TMPDIR/ovs
+    git archive --prefix=${prefix}-${snapser}.NSH${snapgit}/ HEAD  | gzip -9 > $RPMDIR/SOURCES/${archive}
     echo "--------------------------------------------"
     echo "Building openvswitch kernel module RPM"
     echo
-    rpmbuild -bb -D "kversion $kernel_version" -D "kflavors default" --define "_topdir `echo $RPMDIR`" $setnocheck rhel/openvswitch-kmod-${os_type}.spec
+    cd $BUILD_BASE
+    rpmbuild -bb -D "kversion $kernel_version" -D "kflavors default" --define "_topdir `echo $RPMDIR`" $setnocheck openvswitch-kmod.spec
 fi
 
 cp $RPMDIR/RPMS/x86_64/*.rpm $HOME

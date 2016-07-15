@@ -34,7 +34,7 @@ export PATCH=none
 #
 # DPDK configuration.
 #
-export WITH_DPDK=yes
+export WITH_DPDK=no
 export DPDK_PATCH=none
 export DPDK_VERSION=2.2.0
 export OVS_VERSION=7d433ae57ebb90cd68e8fa948a096f619ac4e2d8
